@@ -25,7 +25,21 @@ export class SettingsController {
             thinkingLevel: "low",
             openaiBaseUrl: "",
             openaiApiKey: "",
-            openaiModel: ""
+            openaiModel: "",
+            // MCP (External Tools)
+            mcpEnabled: false,
+            mcpTransport: "sse",
+            mcpServerUrl: "http://127.0.0.1:3006/sse",
+            mcpServers: [{
+                id: `srv_${Date.now()}`,
+                name: "Local Proxy",
+                transport: "sse",
+                url: "http://127.0.0.1:3006/sse",
+                enabled: true,
+                toolMode: "all",
+                enabledTools: []
+            }],
+            mcpActiveServerId: null
         };
 
         // Initialize View
@@ -111,7 +125,13 @@ export class SettingsController {
             thinkingLevel: data.connection.thinkingLevel,
             openaiBaseUrl: data.connection.openaiBaseUrl,
             openaiApiKey: data.connection.openaiApiKey,
-            openaiModel: data.connection.openaiModel
+            openaiModel: data.connection.openaiModel,
+            // MCP
+            mcpEnabled: data.connection.mcpEnabled === true,
+            mcpTransport: data.connection.mcpTransport || "sse",
+            mcpServerUrl: data.connection.mcpServerUrl || "",
+            mcpServers: Array.isArray(data.connection.mcpServers) ? data.connection.mcpServers : [],
+            mcpActiveServerId: data.connection.mcpActiveServerId || null
         };
         
         saveConnectionSettingsToStorage(this.connectionData);
@@ -203,6 +223,36 @@ export class SettingsController {
         }
         
         this.view.setConnectionSettings(this.connectionData);
+    }
+
+    updateMcpTestResult(result) {
+        if (!this.view || !this.view.connection || typeof this.view.connection.setMcpTestStatus !== 'function') return;
+
+        if (result && result.ok === true) {
+            const count = typeof result.toolsCount === 'number' ? result.toolsCount : 0;
+            this.view.connection.setMcpTestStatus(`Connected. Tools: ${count}`, false);
+            return;
+        }
+
+        const err = result && result.error ? result.error : 'Connection failed';
+        this.view.connection.setMcpTestStatus(`Failed: ${err}`, true);
+    }
+
+    updateMcpToolsResult(result) {
+        if (!this.view || !this.view.connection || typeof this.view.connection.setMcpToolsList !== 'function') return;
+
+        if (!result || result.ok !== true) {
+            const err = result && result.error ? result.error : 'Failed to fetch tools';
+            this.view.connection.setMcpTestStatus(`Failed: ${err}`, true);
+            return;
+        }
+
+        this.view.connection.setMcpToolsList(
+            result.serverId || null,
+            result.transport || 'sse',
+            result.url || '',
+            Array.isArray(result.tools) ? result.tools : []
+        );
     }
     
     updateSidebarBehavior(behavior) {

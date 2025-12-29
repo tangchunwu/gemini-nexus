@@ -37,7 +37,7 @@ export class MessageBridge {
             chrome.runtime.sendMessage(payload)
                 .then(response => {
                     // If request demands a reply (e.g., GET_LOGS, CHECK_PAGE_CONTEXT), send it back
-                    if (response && (payload.action === 'GET_LOGS' || payload.action === 'CHECK_PAGE_CONTEXT')) {
+                    if (response && (payload.action === 'GET_LOGS' || payload.action === 'CHECK_PAGE_CONTEXT' || payload.action === 'MCP_TEST_CONNECTION' || payload.action === 'MCP_LIST_TOOLS')) {
                         this.frame.postMessage({
                             action: 'BACKGROUND_MESSAGE',
                             payload: response
@@ -97,7 +97,12 @@ export class MessageBridge {
                 'geminiThinkingLevel',
                 'geminiOpenaiBaseUrl',
                 'geminiOpenaiApiKey',
-                'geminiOpenaiModel'
+                'geminiOpenaiModel',
+                'geminiMcpEnabled',
+                'geminiMcpTransport',
+                'geminiMcpServerUrl',
+                'geminiMcpServers',
+                'geminiMcpActiveServerId'
             ], (res) => {
                 this.frame.postMessage({ 
                     action: 'RESTORE_CONNECTION_SETTINGS', 
@@ -108,7 +113,13 @@ export class MessageBridge {
                         thinkingLevel: res.geminiThinkingLevel || "low",
                         openaiBaseUrl: res.geminiOpenaiBaseUrl || "",
                         openaiApiKey: res.geminiOpenaiApiKey || "",
-                        openaiModel: res.geminiOpenaiModel || ""
+                        openaiModel: res.geminiOpenaiModel || "",
+                        // MCP
+                        mcpEnabled: res.geminiMcpEnabled === true,
+                        mcpTransport: res.geminiMcpTransport || "sse",
+                        mcpServerUrl: res.geminiMcpServerUrl || "http://127.0.0.1:3006/sse",
+                        mcpServers: Array.isArray(res.geminiMcpServers) ? res.geminiMcpServers : null,
+                        mcpActiveServerId: res.geminiMcpActiveServerId || null
                     } 
                 });
             });
@@ -135,6 +146,12 @@ export class MessageBridge {
             this.state.save('geminiOpenaiBaseUrl', payload.openaiBaseUrl);
             this.state.save('geminiOpenaiApiKey', payload.openaiApiKey);
             this.state.save('geminiOpenaiModel', payload.openaiModel);
+            // MCP
+            this.state.save('geminiMcpEnabled', payload.mcpEnabled === true);
+            this.state.save('geminiMcpTransport', payload.mcpTransport || "sse");
+            this.state.save('geminiMcpServerUrl', payload.mcpServerUrl || "");
+            this.state.save('geminiMcpServers', Array.isArray(payload.mcpServers) ? payload.mcpServers : []);
+            this.state.save('geminiMcpActiveServerId', payload.mcpActiveServerId || null);
         }
     }
 

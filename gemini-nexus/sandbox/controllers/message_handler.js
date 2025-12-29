@@ -15,6 +15,21 @@ export class MessageHandler {
     }
 
     async handle(request) {
+        // MCP server test result
+        if (request.action === "MCP_TEST_RESULT") {
+            if (this.ui && this.ui.settings && typeof this.ui.settings.updateMcpTestResult === 'function') {
+                this.ui.settings.updateMcpTestResult(request);
+            }
+            return;
+        }
+
+        if (request.action === "MCP_TOOLS_RESULT") {
+            if (this.ui && this.ui.settings && typeof this.ui.settings.updateMcpToolsResult === 'function') {
+                this.ui.settings.updateMcpToolsResult(request);
+            }
+            return;
+        }
+
         // 0. Stream Update
         if (request.action === "GEMINI_STREAM_UPDATE") {
             this.handleStreamUpdate(request);
