@@ -140,6 +140,20 @@ export class MessageBridge {
             // System Prompt
             this.state.save('geminiSystemPrompt', payload.systemPrompt);
         }
+
+        // 7. Prompt Templates
+        if (action === 'GET_PROMPT_TEMPLATES') {
+            chrome.storage.local.get(['geminiPromptTemplates'], (res) => {
+                this.frame.postMessage({
+                    action: 'RESTORE_PROMPT_TEMPLATES',
+                    payload: res.geminiPromptTemplates || []
+                });
+            });
+            return;
+        }
+        if (action === 'SAVE_PROMPT_TEMPLATES') {
+            this.state.save('geminiPromptTemplates', payload);
+        }
     }
 
     handleRuntimeMessage(message) {
