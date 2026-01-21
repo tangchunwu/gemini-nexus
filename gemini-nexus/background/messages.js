@@ -12,18 +12,18 @@ import { UIMessageHandler } from './handlers/ui.js';
  * @param {LogManager} logManager
  */
 export function setupMessageListener(sessionManager, imageHandler, controlManager, mcpManager, logManager) {
-    
+
     const sessionHandler = new SessionMessageHandler(sessionManager, imageHandler, controlManager, mcpManager);
     const uiHandler = new UIMessageHandler(imageHandler, controlManager, mcpManager);
 
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        
+
         // --- LOGGING SYSTEM ---
         if (request.action === 'LOG_ENTRY') {
             logManager.add(request.entry);
             return false;
         }
-        
+
         if (request.action === 'GET_LOGS') {
             sendResponse({ logs: logManager.getLogs() });
             return true;
@@ -38,7 +38,24 @@ export function setupMessageListener(sessionManager, imageHandler, controlManage
         if (uiHandler.handle(request, sender, sendResponse)) {
             return true;
         }
-        
+
         return false;
+    });
+
+    // --- EXTERNAL MESSAGING (For Blinko integration) ---
+    chrome.runtime.onMessageExternal.addListener((request, sender, sendResponse) => {
+        if (request.action === 'GET_NEXUS_CONFIG') {
+            chrome.storage.local.get([
+                'geminiOpenaiApiKey',
+                'geminiOpenaiBaseUrl',
+                'geminiOpenaiModel',
+                'geminiSystemPrompt',
+                'geminiProvider',
+                'geminiUseOfficialApi'
+            ], (res) => {
+                sendResponse(res);
+            });
+            return true; // Async response
+        }
     });
 }
