@@ -4,6 +4,7 @@ import { MessageHandler } from './message_handler.js';
 import { SessionFlowController } from './session_flow.js';
 import { PromptController } from './prompt.js';
 import { PromptTemplatesController } from './prompt_templates.js';
+import { ExportManager } from './export_manager.js';
 import { t } from '../core/i18n.js';
 import { saveSessionsToStorage, sendToBackground } from '../../lib/messaging.js';
 
@@ -46,6 +47,49 @@ export class AppController {
                 }
             }
         });
+
+        // Initialize Export Manager
+        this.exportManager = new ExportManager();
+        this._bindExportEvents();
+    }
+
+    _bindExportEvents() {
+        const btn = document.getElementById('export-chat-btn');
+        const dropdown = document.getElementById('export-dropdown');
+
+        if (btn && dropdown) {
+            // Toggle Dropdown
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isVisible = dropdown.style.display === 'block';
+                dropdown.style.display = isVisible ? 'none' : 'block';
+
+                // Close template dropdown if open
+                if (this.promptTemplates) this.promptTemplates.close();
+            });
+
+            // Handle Format Selection
+            dropdown.querySelectorAll('.dropdown-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const format = item.dataset.format;
+                    const session = this.sessionManager.getCurrentSession();
+                    if (session) {
+                        this.exportManager.export(session, format);
+                    } else {
+                        alert(t('noActiveSession') || 'No active session to export');
+                    }
+                    dropdown.style.display = 'none';
+                });
+            });
+
+            // Close on click outside
+            document.addEventListener('click', (e) => {
+                if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+        }
     }
 
     setCaptureMode(mode) {
