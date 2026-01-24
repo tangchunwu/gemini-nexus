@@ -102,20 +102,7 @@ Gemini Nexus 可以选择连接到外部 MCP 服务器（通过 **SSE**、**可�
 
 ---
 
-## ❤️ 赞助与支持
 
-如果您觉得 Gemini Nexus 提升了您的工作效率，欢迎请开发者喝杯咖啡，支持项目的持续维护！☕
-
-**赞赏通道（爱发电）：** [https://afdian.com/a/gemini-nexus](https://afdian.com/a/gemini-nexus)
-
-<div align="center">
-  <a href="https://afdian.com/a/gemini-nexus" target="_blank">
-    <img src="https://github.com/user-attachments/assets/b833ac9b-ca8d-4ff6-b83c-f3b2b0094aa8" width="200" alt="afdian-yeahhe">
-  </a>
-  <p><b>扫描上方二维码或 <a href="https://afdian.com/a/gemini-nexus" target="_blank">点击此处</a> 前往爱发电支持我</b></p>
-</div>
-
----
 
 ## 🚀 快速开始
 
