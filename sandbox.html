@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Gemini Nexus UI</title>
+    
+    <!-- CRITICAL: Apply Theme & Lang Immediately from URL before Rendering -->
+    <script src="sandbox/theme_init.js"></script>
+    
+    <!-- Preconnect to CDN -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+    <!-- Local CSS (Parallel Loading) -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/chat.css">
+    <link rel="stylesheet" href="css/input.css">
+
+    <!-- Dependencies are now Lazy Loaded in sandbox/index.js to speed up First Paint -->
+</head>
+<body>
+    <div id="app"></div>
+    <script src="sandbox/index.js" type="module"></script>
+</body>
+</html>

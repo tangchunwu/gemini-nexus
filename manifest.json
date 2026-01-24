@@ -1,0 +1,85 @@
+
+{
+  "manifest_version": 3,
+  "name": "Gemini Nexus",
+  "version": "3.0.0",
+  "permissions": ["sidePanel", "storage", "contextMenus", "scripting", "alarms"],
+  "host_permissions": [
+    "https://gemini.google.com/*",
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background/index.js",
+    "type": "module"
+  },
+  "icons": {
+    "16": "logo.png",
+    "32": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  },
+  "action": {
+    "default_title": "Open Gemini Chat",
+    "default_icon": "logo.png"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+P",
+        "mac": "Command+Shift+P"
+      },
+      "description": "Open Gemini Nexus"
+    }
+  },
+  "side_panel": {
+    "default_path": "sidepanel/index.html"
+  },
+  "sandbox": {
+    "pages": ["sandbox.html"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "content/overlay.js", 
+        "content/toolbar/icons.js",
+        "content/toolbar/styles/core.js",
+        "content/toolbar/styles/widget.js",
+        "content/toolbar/styles/panel.js",
+        "content/toolbar/styles/markdown.js",
+        "content/toolbar/styles/index.js",
+        "content/toolbar/markdown/utils.js",
+        "content/toolbar/markdown/highlight.js",
+        "content/toolbar/markdown/parser.js",
+        "content/toolbar/markdown/renderer.js",
+        "content/toolbar/drag.js",
+        "content/toolbar/templates.js",
+        "content/toolbar/view/utils.js",
+        "content/toolbar/view/widget.js",
+        "content/toolbar/view/window.js",
+        "content/toolbar/view/index.js",
+        "content/toolbar/events.js",
+        "content/toolbar/ui.js", 
+        "content/toolbar/actions.js",
+        "content/toolbar/image.js",
+        "content/toolbar/stream.js", 
+        "content/toolbar/input.js",
+        "content/toolbar/selection.js",
+        "content/toolbar/controller.js",
+        "content/toolbar/index.js", 
+        "content/index.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["logo.png"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'",
+    "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net"
+  }
+}
